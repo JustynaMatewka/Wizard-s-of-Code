@@ -40,40 +40,6 @@
         font-weight: bold;
     }
     
-    /* Style dla sekcji "map" */
-    .map {
-        text-align: left;
-        padding: 20px;
-    }
-    
-    .map_image img {
-        max-width: 100%;
-        height: auto;
-    }
-    
-    /* Style dla sekcji "play" */
-    .play {
-        text-align: center;
-        padding: 20px;
-    }
-    
-    .play .map a {
-        display: inline-block;
-        padding: 20px 40px;
-        font-size: 24px;
-        text-decoration: none;
-        background-color: brown;
-        color: #fff;
-        border: 2px solid #333;
-        border-radius: 10px;
-        transition: transform 0.3s, background-color 0.3s;
-    }
-    
-    .play .map a:hover {
-        transform: scale(1.1);
-        background-color: #6b3e0f;
-    }
-    
     /* Style dla sekcji "wizard" */
     .wizard {
         clear: both;

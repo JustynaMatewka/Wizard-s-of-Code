@@ -3,14 +3,14 @@ var ctx = canvas.getContext('2d');
 
 class Node {
     constructor(data) {
-      this.data = data;
-      this.left = null;
-      this.right = null;
+        this.data = data;
+        this.left = null;
+        this.right = null;
       this.x = 0; // Współrzędna x do rysowania
       this.y = 0; // Współrzędna y do rysowania
     }
 }
-  
+
 class BinaryTree {
     constructor() {
         this.root = null;
@@ -19,21 +19,21 @@ class BinaryTree {
     insert(data) {
         const newNode = new Node(data);
         if (!this.root) {
-          this.root = newNode;
+            this.root = newNode;
         } else {
-          const queue = [this.root];
-          while (queue.length > 0) {
+            const queue = [this.root];
+            while (queue.length > 0) {
             const node = queue.shift();
             if (!node.left) {
-              node.left = newNode;
-              return;
+                node.left = newNode;
+                return;
             } else if (!node.right) {
-              node.right = newNode;
-              return;
+                node.right = newNode;
+                return;
             }
             queue.push(node.left);
             queue.push(node.right);
-          }
+            }
         }
     }
     search(data) {
@@ -56,10 +56,10 @@ class BinaryTree {
     draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (this.root) {
-          this.setNodeCoordinates(this.root, canvas.width / 2, 50, canvas.width / 4);
-          this.drawNode(this.root);
+            this.setNodeCoordinates(this.root, canvas.width / 2, 50, canvas.width / 4);
+            this.drawNode(this.root);
         }
-      }
+        }
     setNodeCoordinates(node, x, y, horizontalOffset) {
         if (node) {
             node.x = x;
@@ -70,28 +70,28 @@ class BinaryTree {
     }
     drawNode(node) {
         if (node) {
-          ctx.beginPath();
+            ctx.beginPath();
         //   ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
-          ctx.stroke();
-          ctx.fillText(node.data.name, node.x - 5, node.y + 5);
-          ctx.closePath();
+            ctx.stroke();
+            ctx.fillText(node.data.name, node.x - 5, node.y + 5);
+            ctx.closePath();
 
-          if (node.left) {
+            if (node.left) {
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(node.left.x, node.left.y);
             ctx.stroke();
             ctx.closePath();
             this.drawNode(node.left);
-          }
-          if (node.right) {
+            }
+            if (node.right) {
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(node.right.x, node.right.y);
             ctx.stroke();
             ctx.closePath();
             this.drawNode(node.right);
-          }
+            }
         }
     }
 }
@@ -108,7 +108,7 @@ function shuffleMapArray(array) {
         // console.log(j);
         [array[i], array[j]] = [array[j], array[i]];
     }
-  }
+}
 
 //to bedzie miejsce w którym jest gracz, nieinteraktywny pokój
 class roomHeroPosition {

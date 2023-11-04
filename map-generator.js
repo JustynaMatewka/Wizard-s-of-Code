@@ -18,27 +18,22 @@ class BinaryTree {
 
     insert(data) {
         const newNode = new Node(data);
-
         if (!this.root) {
-        this.root = newNode;
+          this.root = newNode;
         } else {
-        this.insertNode(this.root, newNode);
-        }
-    }
-
-    insertNode(node, newNode) {
-        if (newNode.data < node.data) {
-        if (node.left === null) {
-            node.left = newNode;
-        } else {
-            this.insertNode(node.left, newNode);
-        }
-        } else {
-        if (node.right === null) {
-            node.right = newNode;
-        } else {
-            this.insertNode(node.right, newNode);
-        }
+          const queue = [this.root];
+          while (queue.length > 0) {
+            const node = queue.shift();
+            if (!node.left) {
+              node.left = newNode;
+              return;
+            } else if (!node.right) {
+              node.right = newNode;
+              return;
+            }
+            queue.push(node.left);
+            queue.push(node.right);
+          }
         }
     }
     search(data) {
@@ -100,6 +95,17 @@ class BinaryTree {
         }
     }
 }
+function getRandomElementFromArray(arr) {
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    return arr[randomIndex];
+}
+
+//to bedzie miejsce w którym jest gracz, nieinteraktywny pokój
+class roomHeroPosition {
+    constructor(){
+
+    }
+}
 
 class roomFight {
     constructor(){
@@ -131,15 +137,40 @@ class roomJobInterview {
     }
 }
 
-function generateMap() {
+//levels number to ilość poziomów drzewa, domyślnie 4
+function generateMap(levelsNumber = 4) {
     const binaryTree = new BinaryTree();
 
-    binaryTree.insert(10);
-    binaryTree.insert(5);
-    binaryTree.insert(15);
-    binaryTree.insert(3);
-    binaryTree.insert(7);  
+    binaryTree.insert(new roomHeroPosition());
+    
+    utilityRooms = [
+        new roomJobInterview(),
+        new roomRest(),
+        new roomShop(),
+        new roomTherapy
+    ]
+
+    var countRooms = Math.pow(2, levelsNumber + 1) - 2;
+    var countUtilityRooms = Math.ceil(countRooms * 0.2);
+
+    totalRooms = []
+    for(i = countRooms - countUtilityRooms; i > 0; i--){
+        totalRooms.push(new roomFight());
+    }
+    for(i = countUtilityRooms; i > 0; i--){
+        totalRooms.push(getRandomElementFromArray(utilityRooms));
+    }
+    
+    totalRooms.forEach(element => {
+        binaryTree.insert(element)
+    });
+
+    console.log(totalRooms)
     binaryTree.draw();
 }
 
-generateMap();
+function gameSetUp(){
+    generateMap();
+}
+
+gameSetUp();

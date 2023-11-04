@@ -71,7 +71,7 @@ class BinaryTree {
     drawNode(node) {
         if (node) {
           ctx.beginPath();
-          ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
+        //   ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
           ctx.stroke();
           ctx.fillText(node.data.name, node.x - 5, node.y + 5);
           ctx.closePath();
@@ -100,10 +100,13 @@ function getRandomElementFromArray(arr) {
     return arr[randomIndex];
 }
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+function shuffleMapArray(array) {
+    for (let i = array.length - 1; i > 3; i--) {
+        min = Math.ceil(3);
+        max = Math.floor(array.length - 1);
+        const j = Math.floor(Math.random() * (max - min + 1)) + min;
+        // console.log(j);
+        [array[i], array[j]] = [array[j], array[i]];
     }
   }
 
@@ -154,7 +157,7 @@ function generateMap(levelsNumber = 4) {
         new roomJobInterview(),
         new roomRest(),
         new roomShop(),
-        new roomTherapy
+        new roomTherapy()
     ]
 
     var countRooms = Math.pow(2, levelsNumber + 1) - 2;
@@ -167,12 +170,12 @@ function generateMap(levelsNumber = 4) {
     for(i = countUtilityRooms; i > 0; i--){
         totalRooms.push(getRandomElementFromArray(utilityRooms));
     }
-    shuffleArray(totalRooms);
+    shuffleMapArray(totalRooms);
     totalRooms.forEach(element => {
         binaryTree.insert(element)
     });
 
-    console.log(totalRooms)
+    // console.log(totalRooms)
     binaryTree.draw();
 }
 

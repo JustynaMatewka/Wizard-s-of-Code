@@ -73,7 +73,7 @@ class BinaryTree {
           ctx.beginPath();
           ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
           ctx.stroke();
-          ctx.fillText(node.data, node.x - 5, node.y + 5);
+          ctx.fillText(node.data.name, node.x - 5, node.y + 5);
           ctx.closePath();
 
           if (node.left) {
@@ -100,40 +100,47 @@ function getRandomElementFromArray(arr) {
     return arr[randomIndex];
 }
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
 //to bedzie miejsce w którym jest gracz, nieinteraktywny pokój
 class roomHeroPosition {
     constructor(){
-
+        this.name = "Bohater"
     }
 }
 
 class roomFight {
     constructor(){
-
+        this.name = "Walka"
     }
 }
 
 class roomRest {
     constructor(){
-
+        this.name = "Odpoczynek"
     }
 }
 
 class roomTherapy {
     constructor(){
-
+        this.name = "Terapia"
     }
 }
 
 class roomShop {
     constructor(){
-
+        this.name = "Sklep"
     }
 }
 
 class roomJobInterview {
     constructor(){
-
+        this.name = "JobInt"
     }
 }
 
@@ -160,7 +167,7 @@ function generateMap(levelsNumber = 4) {
     for(i = countUtilityRooms; i > 0; i--){
         totalRooms.push(getRandomElementFromArray(utilityRooms));
     }
-    
+    shuffleArray(totalRooms);
     totalRooms.forEach(element => {
         binaryTree.insert(element)
     });

@@ -6,8 +6,9 @@ class Node {
         this.data = data;
         this.left = null;
         this.right = null;
-      this.x = 0; // Współrzędna x do rysowania
-      this.y = 0; // Współrzędna y do rysowania
+        this.parent = null;
+        this.x = 0; // Współrzędna x do rysowania
+        this.y = 0; // Współrzędna y do rysowania
     }
 }
 
@@ -18,48 +19,55 @@ class BinaryTree {
 
     insert(data) {
         const newNode = new Node(data);
+
         if (!this.root) {
             this.root = newNode;
         } else {
             const queue = [this.root];
             while (queue.length > 0) {
-            const node = queue.shift();
-            if (!node.left) {
-                node.left = newNode;
-                return;
-            } else if (!node.right) {
-                node.right = newNode;
-                return;
-            }
-            queue.push(node.left);
-            queue.push(node.right);
+                const node = queue.shift();
+                if (!node.left) {
+                    node.left = newNode;
+                    newNode.parent = node;
+                    return;
+                } else if (!node.right) {
+                    node.right = newNode;
+                    newNode.parent = node;
+                    return;
+                }
+                queue.push(node.left);
+                queue.push(node.right);
             }
         }
+        
     }
+
     search(data) {
         return this.searchNode(this.root, data);
     }
 
     searchNode(node, data) {
         if (node === null) {
-        return false;
+            return false;
         }
 
         if (data < node.data) {
-        return this.searchNode(node.left, data);
+            return this.searchNode(node.left, data);
         } else if (data > node.data) {
-        return this.searchNode(node.right, data);
+            return this.searchNode(node.right, data);
         } else {
-        return true;
+            return true;
         }
     }
+
     draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (this.root) {
             this.setNodeCoordinates(this.root, canvas.width / 2, 50, canvas.width / 4);
             this.drawNode(this.root);
         }
-        }
+    }
+
     setNodeCoordinates(node, x, y, horizontalOffset) {
         if (node) {
             node.x = x;
@@ -68,13 +76,30 @@ class BinaryTree {
             this.setNodeCoordinates(node.right, x + horizontalOffset, y + 80, horizontalOffset / 2);
         }
     }
+
     drawNode(node) {
         if (node) {
             ctx.beginPath();
-        //   ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
             ctx.stroke();
-            ctx.fillText(node.data.name, node.x - 5, node.y + 5);
             ctx.closePath();
+            
+            //console.log(node.parent);
+            if (node.data.image) {
+                const img = new Image();
+                img.src = node.data.image;
+
+                img.onload = function () {
+                    if (node.data.name == "Bohater"){
+                        ctx.drawImage(img, node.x - 40, node.y - 50, 100, 100);
+                    }
+                    else{
+                        ctx.drawImage(img, node.x - 20, node.y - 20, 40, 40);
+                    }
+                };
+
+            } else {
+                ctx.fillText(node.data.name, node.x - 5, node.y + 5);
+            }
 
             if (node.left) {
             ctx.beginPath();
@@ -95,6 +120,8 @@ class BinaryTree {
         }
     }
 }
+
+
 function getRandomElementFromArray(arr) {
     const randomIndex = Math.floor(Math.random() * arr.length);
     return arr[randomIndex];
@@ -114,43 +141,49 @@ function shuffleMapArray(array) {
 class roomHeroPosition {
     constructor(){
         this.name = "Bohater"
+        this.image = '../Sources/wizard.svg';
     }
 }
 
 class roomFight {
     constructor(){
         this.name = "Walka"
+        this.image = '../Sources/board_icons/sword_icon.png';
+        this.src = '../Levels/level.html'
     }
 }
 
 class roomRest {
     constructor(){
         this.name = "Odpoczynek"
+        this.image = '../Sources/board_icons/shield_icon.png';
     }
 }
 
 class roomTherapy {
     constructor(){
         this.name = "Terapia"
+        this.image = '../Sources/board_icons/heart_icon.png';
     }
 }
 
 class roomShop {
     constructor(){
         this.name = "Sklep"
+        this.image = '../Sources/board_icons/potion_icon.png';
     }
 }
 
 class roomJobInterview {
     constructor(){
         this.name = "JobInt"
+        this.image = '../Sources/board_icons/foot_icon.png';
     }
 }
 
 //levels number to ilość poziomów drzewa, domyślnie 4
 function generateMap(levelsNumber = 4) {
     const binaryTree = new BinaryTree();
-
     binaryTree.insert(new roomHeroPosition());
     
     utilityRooms = [
@@ -177,6 +210,33 @@ function generateMap(levelsNumber = 4) {
 
     // console.log(totalRooms)
     binaryTree.draw();
+
+    
+
+    canvas.addEventListener('click', (event) => {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        findClickedNode(binaryTree.root, mouseX, mouseY);
+    });
+
+    function findClickedNode(node, x, y) {
+        if (node) {
+            if (
+                x >= node.x - 20 &&
+                x <= node.x + 20 &&
+                y >= node.y - 20 &&
+                y <= node.y + 20
+            ) {
+                if (node.data.src) {
+                    if (node.parent.data.name == "Bohater") {
+                        window.location.href = node.data.src;
+                    }
+                }
+            }
+            findClickedNode(node.left, x, y);
+            findClickedNode(node.right, x, y);
+        }
+    }
 }
 
 function gameSetUp(){

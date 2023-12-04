@@ -3,6 +3,16 @@ const ctx = canvas.getContext("2d");
 canvas.height = 576
 canvas.width = 1024
 
+ctx.fillStyle = 'black';
+ctx.fillRect(0,0, canvas.width, canvas.height);
+const map_img = new Image()
+map_img.src = '../public/map_game.png';
+
+map_img.onload = () => {
+  ctx.drawImage(map_img,0,0)
+}
+
+
 class Node {
   constructor(data) {
     this.data = data;
@@ -105,7 +115,7 @@ class BinaryTree {
         img.src = node.data.image;
 
         img.onload = function () {
-          if (node.data.name == "Bohater") {
+          if (node.data.name == "root") {
             ctx.drawImage(img, node.x - 40, node.y - 50, 100, 100);
           } else {
             ctx.drawImage(img, node.x - 20, node.y - 20, 40, 40);
@@ -151,10 +161,10 @@ function shuffleMapArray(array) {
 }
 
 //to bedzie miejsce w którym jest gracz, nieinteraktywny pokój
-class roomHeroPosition {
+class roomRoot {
   constructor() {
-    this.name = "Bohater";
-    this.image = "../public/wizard.svg";
+    this.name = "root";
+    this.image = "../public/mag.png";
   }
 }
 
@@ -194,10 +204,17 @@ class roomJobInterview {
   }
 }
 
+class Hero {
+  constructor(){
+    this.name = "Bohater";
+    this.image = "../public/mag.png"
+  }
+}
+
 //levels number to ilość poziomów drzewa, domyślnie 4
 function generateMap(levelsNumber = 4) {
   const binaryTree = new BinaryTree();
-  binaryTree.insert(new roomHeroPosition());
+  binaryTree.insert(new roomRoot());
 
   utilityRooms = [
     new roomJobInterview(),
@@ -221,37 +238,38 @@ function generateMap(levelsNumber = 4) {
     binaryTree.insert(element);
   });
 
-  // console.log(totalRooms)
-  binaryTree.draw();
+  return binaryTree;
+}
 
-  canvas.addEventListener("click", (event) => {
-    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    findClickedNode(binaryTree.root, mouseX, mouseY);
-  });
-
-  function findClickedNode(node, x, y) {
-    if (node) {
-      if (
-        x >= node.x - 20 &&
-        x <= node.x + 20 &&
-        y >= node.y - 20 &&
-        y <= node.y + 20
-      ) {
-        if (node.data.src) {
-          if (node.parent.data.name == "Bohater") {
-            window.location.href = node.data.src;
-          }
+function findClickedNode(node, x, y) {
+  if (node) {
+    if (
+      x >= node.x - 20 &&
+      x <= node.x + 20 &&
+      y >= node.y - 20 &&
+      y <= node.y + 20
+    ) {
+      if (node.data.src) {
+        if (node.parent.data.name == "root") {
+          window.location.href = node.data.src;
         }
       }
-      findClickedNode(node.left, x, y);
-      findClickedNode(node.right, x, y);
     }
+    findClickedNode(node.left, x, y);
+    findClickedNode(node.right, x, y);
   }
 }
 
 function gameSetUp() {
-  generateMap();
+  const bn = generateMap();
+  bn.draw();
+
+  canvas.addEventListener("click", (event) => {
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    findClickedNode(bn.root, mouseX, mouseY);
+  });
+
 }
 
 gameSetUp();

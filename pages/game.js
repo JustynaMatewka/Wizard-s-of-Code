@@ -1,18 +1,3 @@
-var canvas = document.getElementById("game_window");
-const ctx = canvas.getContext("2d");
-canvas.height = 576
-canvas.width = 1024
-
-ctx.fillStyle = 'black';
-ctx.fillRect(0,0, canvas.width, canvas.height);
-const map_img = new Image()
-map_img.src = '../public/map_game.png';
-
-map_img.onload = () => {
-  ctx.drawImage(map_img,0,0)
-}
-
-
 class Node {
   constructor(data) {
     this.data = data;
@@ -72,15 +57,19 @@ class BinaryTree {
   }
 
   draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (this.root) {
+      this.drawNode(this.root);
+    }
+  }
+
+  setNodeCoordinatesRequest() {
     if (this.root) {
       this.setNodeCoordinates(
         this.root,
         canvas.width / 2,
         50,
-        canvas.width / 4
+        920 / 4
       );
-      this.drawNode(this.root);
     }
   }
 
@@ -91,31 +80,45 @@ class BinaryTree {
       this.setNodeCoordinates(
         node.left,
         x - horizontalOffset,
-        y + 80,
+        y + Math.floor(Math.random() * (180 - 60 + 1)) + 60,
         horizontalOffset / 2
       );
       this.setNodeCoordinates(
         node.right,
         x + horizontalOffset,
-        y + 80,
+        y + Math.floor(Math.random() * (180 - 60 + 1)) + 60,
         horizontalOffset / 2
       );
     }
   }
 
   drawNode(node) {
+    ctx.setLineDash([10, 10]);
+    ctx.strokeStyle = '#D3B88C'
+    ctx.lineWidth = 3
     if (node) {
-      ctx.beginPath();
-      ctx.stroke();
-      ctx.closePath();
+      if (node.left) {
+        ctx.beginPath();
+        ctx.moveTo(node.x, node.y);
+        ctx.lineTo(node.left.x, node.left.y);
+        ctx.stroke();
+        this.drawNode(node.left);
+      }
+      if (node.right) {
+        ctx.beginPath();
+        ctx.moveTo(node.x, node.y);
+        ctx.lineTo(node.right.x, node.right.y);
+        ctx.stroke();
+        this.drawNode(node.right);
+      }
 
-      //console.log(node.parent);
+  
       if (node.data.image) {
         const img = new Image();
         img.src = node.data.image;
-
+  
         img.onload = function () {
-          if (node.data.name == "root") {
+          if (node.data.name == "hero") {
             ctx.drawImage(img, node.x - 40, node.y - 50, 100, 100);
           } else {
             ctx.drawImage(img, node.x - 20, node.y - 20, 40, 40);
@@ -124,25 +127,9 @@ class BinaryTree {
       } else {
         ctx.fillText(node.data.name, node.x - 5, node.y + 5);
       }
-
-      if (node.left) {
-        ctx.beginPath();
-        ctx.moveTo(node.x, node.y);
-        ctx.lineTo(node.left.x, node.left.y);
-        ctx.stroke();
-        ctx.closePath();
-        this.drawNode(node.left);
-      }
-      if (node.right) {
-        ctx.beginPath();
-        ctx.moveTo(node.x, node.y);
-        ctx.lineTo(node.right.x, node.right.y);
-        ctx.stroke();
-        ctx.closePath();
-        this.drawNode(node.right);
-      }
     }
   }
+
 }
 
 function getRandomElementFromArray(arr) {
@@ -155,15 +142,14 @@ function shuffleMapArray(array) {
     min = Math.ceil(3);
     max = Math.floor(array.length - 1);
     const j = Math.floor(Math.random() * (max - min + 1)) + min;
-    // console.log(j);
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
 //to bedzie miejsce w którym jest gracz, nieinteraktywny pokój
-class roomRoot {
+class roomHero {
   constructor() {
-    this.name = "root";
+    this.name = "hero";
     this.image = "../public/mag.png";
   }
 }
@@ -172,7 +158,7 @@ class roomFight {
   constructor() {
     this.name = "Walka";
     this.image = "../public/board_icons/sword_icon.png";
-    this.src = "../Levels/level.html";
+    this.src = "../Levels/level.html"
   }
 }
 
@@ -204,17 +190,17 @@ class roomJobInterview {
   }
 }
 
-class Hero {
-  constructor(){
-    this.name = "Bohater";
-    this.image = "../public/mag.png"
+class roomEmpty {
+  constructor() {
+    this.name = "empty";
+    this.image = "";
   }
 }
 
 //levels number to ilość poziomów drzewa, domyślnie 4
 function generateMap(levelsNumber = 4) {
   const binaryTree = new BinaryTree();
-  binaryTree.insert(new roomRoot());
+  binaryTree.insert(new roomHero());
 
   utilityRooms = [
     new roomJobInterview(),
@@ -241,17 +227,21 @@ function generateMap(levelsNumber = 4) {
   return binaryTree;
 }
 
+
 function findClickedNode(node, x, y) {
   if (node) {
     if (
-      x >= node.x - 20 &&
-      x <= node.x + 20 &&
-      y >= node.y - 20 &&
-      y <= node.y + 20
+      x >= node.x - 30 &&
+      x <= node.x + 30 &&
+      y >= node.y - 30 &&
+      y <= node.y + 40
     ) {
-      if (node.data.src) {
-        if (node.parent.data.name == "root") {
-          window.location.href = node.data.src;
+      if (node.data) {
+        if (node.parent.data.name == "hero") {
+          node.data = node.parent.data;                 //tu będzie trigger wchodzenia do pomieszczenia najprawdopodobniej
+          node.parent.data = new roomEmpty()
+          // console.log(node.data);
+          // console.log(node.parent.data);
         }
       }
     }
@@ -261,15 +251,34 @@ function findClickedNode(node, x, y) {
 }
 
 function gameSetUp() {
-  const bn = generateMap();
-  bn.draw();
+  bn = generateMap();
+  bn.setNodeCoordinatesRequest();
+}
 
+function gameRun(){
+  bn.draw();
   canvas.addEventListener("click", (event) => {
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
     findClickedNode(bn.root, mouseX, mouseY);
+    ctx.drawImage(map_img,0,0);               //drugie zero zmienić na -mouseY to będzie na klika przesuwać mapą samą
+    bn.draw();
   });
-
 }
 
+var canvas = document.getElementById("game_window");
+const ctx = canvas.getContext("2d");
+canvas.height = 576
+canvas.width = 1024
+
+ctx.fillStyle = 'black';
+ctx.fillRect(0,0, canvas.width, canvas.height);
+const map_img = new Image()
+map_img.src = '../public/map_game.png';
+
 gameSetUp();
+
+map_img.onload = () => {
+  ctx.drawImage(map_img,0,0)
+  gameRun();
+}

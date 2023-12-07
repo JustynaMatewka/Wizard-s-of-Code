@@ -262,7 +262,7 @@ function gameRun(){
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
     findClickedNode(bn.root, mouseX, mouseY);
     ctx.drawImage(map_img,0,0);               //drugie zero zmienić na -mouseY to będzie na klika przesuwać mapą samą
-    bn.draw();
+    bn.draw();                                //trzeba zaadaptować to aby po przesunięcia przesuwało też mapą jak i bn ale tylko przy zmianie pozycji gracza
   });
 }
 

@@ -121,7 +121,7 @@ class BinaryTree {
           if (node.data.name == "hero") {
             ctx.drawImage(img, node.x - 40, node.y - 50, 100, 100);
           } else {
-            ctx.drawImage(img, node.x - 20, node.y - 20, 40, 40);
+            ctx.drawImage(img, node.x - 20, node.y - 20, 50, 50);
           }
         };
       } else {
@@ -157,7 +157,7 @@ class roomHero {
 class roomFight {
   constructor() {
     this.name = "Walka";
-    this.image = "../public/board_icons/sword_icon.png";
+    this.image = "../public/board_icons/fight_room.png";
     this.src = "../Levels/level.html"
   }
 }
@@ -165,35 +165,35 @@ class roomFight {
 class roomRest {
   constructor() {
     this.name = "Odpoczynek";
-    this.image = "../public/board_icons/shield_icon.png";
+    this.image = "../public/board_icons/rest_room.png";
   }
 }
 
 class roomTherapy {
   constructor() {
     this.name = "Terapia";
-    this.image = "../public/board_icons/heart_icon.png";
+    this.image = "../public/board_icons/therapy_room.png";
   }
 }
 
 class roomShop {
   constructor() {
     this.name = "Sklep";
-    this.image = "../public/board_icons/potion_icon.png";
+    this.image = "../public/board_icons/shop_room.png";
   }
 }
 
 class roomJobInterview {
   constructor() {
     this.name = "JobInt";
-    this.image = "../public/board_icons/foot_icon.png";
+    this.image = "../public/board_icons/job_room.png";
   }
 }
 
 class roomEmpty {
   constructor() {
     this.name = "empty";
-    this.image = "";
+    this.image = "../public/board_icons/empty_room.png";
   }
 }
 

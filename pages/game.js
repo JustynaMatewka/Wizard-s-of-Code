@@ -151,6 +151,8 @@ class roomHero {
   constructor() {
     this.name = "hero";
     this.image = "../public/mag.png";
+    this.hp = 100
+    this.psyche = 3
   }
 }
 
@@ -238,36 +240,73 @@ function findClickedNode(node, x, y) {
     ) {
       if (node.data) {
         if (node.parent.data.name == "hero") {
-          node.data = node.parent.data;                 //tu będzie trigger wchodzenia do pomieszczenia najprawdopodobniej
-          node.parent.data = new roomEmpty()
-          // console.log(node.data);
-          // console.log(node.parent.data);
+          const chosenRoom = node.data;
+          node.data = node.parent.data;
+          node.parent.data = new roomEmpty();
+          return chosenRoom;
         }
       }
     }
-    findClickedNode(node.left, x, y);
-    findClickedNode(node.right, x, y);
+
+    const leftResult = findClickedNode(node.left, x, y);
+    if (leftResult !== undefined) {
+      return leftResult;
+    }
+
+    const rightResult = findClickedNode(node.right, x, y);
+    if (rightResult !== undefined) {
+      return rightResult;
+    }
   }
+
+  return undefined;
 }
+
 
 function gameSetUp() {
   bn = generateMap();
   bn.setNodeCoordinatesRequest();
 }
 
+
+//nasza nieskończona petla nasłuchiwania (pętla całej gry)
 function gameRun(){
   bn.draw();
   canvas.addEventListener("click", (event) => {
+    console.log("początek pętli nasłuchiwania")
+
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    findClickedNode(bn.root, mouseX, mouseY);
+    const trigger = findClickedNode(bn.root, mouseX, mouseY);
+    if(trigger){
+      console.log(trigger);
+      gsap.to('#overlappingDiv', {
+        opacity: 1,
+        repeat: 3,
+        yoyo: true,
+        duration: 0.4,
+        onComplete(){
+          gsap.to('#overlappingDiv', {
+            opacity: 1,
+            duration: 0.4,
+          })
+          animateRoom();
+        }
+      });
+    }
     ctx.drawImage(map_img,0,0);               //drugie zero zmienić na -mouseY to będzie na klika przesuwać mapą samą
     bn.draw();                                //trzeba zaadaptować to aby po przesunięcia przesuwało też mapą jak i bn ale tylko przy zmianie pozycji gracza
   });
 }
 
+function animateRoom(){
+  window.requestAnimationFrame(animateRoom);
+  console.log('animated battle');
+}
+
 var canvas = document.getElementById("game_window");
 const ctx = canvas.getContext("2d");
+
 canvas.height = 576
 canvas.width = 1024
 
@@ -276,9 +315,14 @@ ctx.fillRect(0,0, canvas.width, canvas.height);
 const map_img = new Image()
 map_img.src = '../public/map_game.png';
 
+console.log("przed game set up")
+
 gameSetUp();
 
+console.log("po game set up")
+
 map_img.onload = () => {
+  console.log("img on load")
   ctx.drawImage(map_img,0,0)
   gameRun();
 }

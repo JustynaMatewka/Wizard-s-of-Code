@@ -160,7 +160,7 @@ class roomFight {
   constructor() {
     this.name = "Walka";
     this.image = "../public/board_icons/fight_room.png";
-    this.src = "../Levels/level.html"
+    this.scene = "../public/rooms-scenes/FightRoomSCENE.png";
   }
 }
 
@@ -277,9 +277,12 @@ function gameRun(){
 
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    const trigger = findClickedNode(bn.root, mouseX, mouseY);
-    if(trigger){
+    if(!isTriggerSet){        //jezeli nie jesteś w pomieszczeniu to szukaj czy poprawny node 
+      trigger = findClickedNode(bn.root, mouseX, mouseY);
+    }
+    if(trigger && !isTriggerSet){
       console.log(trigger);
+      isTriggerSet = true;
       gsap.to('#overlappingDiv', {
         opacity: 1,
         repeat: 3,
@@ -289,19 +292,27 @@ function gameRun(){
           gsap.to('#overlappingDiv', {
             opacity: 1,
             duration: 0.4,
+            onComplete(){
+              room_img.src = trigger.scene;
+              animateRoom(trigger);
+              gsap.to('#overlappingDiv',{
+                opacity: 0,
+                duration: 0.4,
+              })
+            }
           })
-          animateRoom();
         }
       });
     }
-    ctx.drawImage(map_img,0,0);               //drugie zero zmienić na -mouseY to będzie na klika przesuwać mapą samą
-    bn.draw();                                //trzeba zaadaptować to aby po przesunięcia przesuwało też mapą jak i bn ale tylko przy zmianie pozycji gracza
+    ctx.drawImage(map_img,0,0);
+    bn.draw();
   });
 }
 
-function animateRoom(){
+function animateRoom(obj){
   window.requestAnimationFrame(animateRoom);
-  console.log('animated battle');
+  console.log('animate');
+  ctx.drawImage(room_img, 0, 0);
 }
 
 var canvas = document.getElementById("game_window");
@@ -314,6 +325,9 @@ ctx.fillStyle = 'black';
 ctx.fillRect(0,0, canvas.width, canvas.height);
 const map_img = new Image()
 map_img.src = '../public/map_game.png';
+
+const room_img = new Image();
+var isTriggerSet = false;
 
 console.log("przed game set up")
 

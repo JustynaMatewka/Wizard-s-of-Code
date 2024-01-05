@@ -64,12 +64,7 @@ class BinaryTree {
 
   setNodeCoordinatesRequest() {
     if (this.root) {
-      this.setNodeCoordinates(
-        this.root,
-        canvas.width / 2,
-        50,
-        920 / 4
-      );
+      this.setNodeCoordinates(this.root, canvas.width / 2, 50, 920 / 4);
     }
   }
 
@@ -94,8 +89,8 @@ class BinaryTree {
 
   drawNode(node) {
     ctx.setLineDash([10, 10]);
-    ctx.strokeStyle = '#D3B88C'
-    ctx.lineWidth = 3
+    ctx.strokeStyle = "#D3B88C";
+    ctx.lineWidth = 3;
     if (node) {
       if (node.left) {
         ctx.beginPath();
@@ -112,11 +107,10 @@ class BinaryTree {
         this.drawNode(node.right);
       }
 
-  
       if (node.data.image) {
         const img = new Image();
         img.src = node.data.image;
-  
+
         img.onload = function () {
           if (node.data.name == "hero") {
             ctx.drawImage(img, node.x - 40, node.y - 50, 100, 100);
@@ -129,7 +123,27 @@ class BinaryTree {
       }
     }
   }
+  searchNodeByName(node, name) {
+    if (node === null) {
+      return null;
+    }
 
+    if (node.data.name === name) {
+      return node;
+    }
+
+    const leftResult = this.searchNodeByName(node.left, name);
+    if (leftResult !== null) {
+      return leftResult;
+    }
+
+    const rightResult = this.searchNodeByName(node.right, name);
+    if (rightResult !== null) {
+      return rightResult;
+    }
+
+    return null;
+  }
 }
 
 function getRandomElementFromArray(arr) {
@@ -151,8 +165,8 @@ class roomHero {
   constructor() {
     this.name = "hero";
     this.image = "../public/mag.png";
-    this.hp = 100
-    this.psyche = 3
+    this.hp = 100;
+    this.psyche = 3;
   }
 }
 
@@ -199,7 +213,36 @@ class roomEmpty {
   }
 }
 
-//levels number to ilość poziomów drzewa, domyślnie 4
+class enemyBug {
+  constructor() {
+    this.name = "Bug";
+    this.image = "../public/enemy/bug.png";
+    this.hp = 50;
+    this.attack = 5;
+    this.lvl = 1;
+  }
+}
+
+class enemy404 {
+  constructor() {
+    this.name = "404";
+    this.image = "../public/enemy/404.png";
+    this.hp = 100;
+    this.attack = 10;
+    this.lvl = 2;
+  }
+}
+
+class enemyErrOnLine9TheFileHas8Lines {
+  constructor() {
+    this.name = "Err On Line 9 the File Has 8 Lines";
+    this.image = "../public/enemy/line.png";
+    this.hp = 50;
+    this.attack = 5;
+    this.lvl = 3;
+  }
+}
+
 function generateMap(levelsNumber = 4) {
   const binaryTree = new BinaryTree();
   binaryTree.insert(new roomHero());
@@ -229,6 +272,23 @@ function generateMap(levelsNumber = 4) {
   return binaryTree;
 }
 
+function generateEnemies(lvl) {
+  const totalEnemies = [
+    new enemyBug(),
+    new enemy404(),
+    new enemyErrOnLine9TheFileHas8Lines(),
+  ];
+  const enemies = [];
+  let enemiesNumber = Math.floor(Math.random() * 3) + lvl;
+  if (enemiesNumber > 4) {
+    enemiesNumber = 4;
+  }
+  for (let i = enemiesNumber; i > 0; i--) {
+    const enemyId = Math.floor(Math.random() * lvl);
+    enemies.push(totalEnemies[enemyId]);
+  }
+  return enemies;
+}
 
 function findClickedNode(node, x, y) {
   if (node) {
@@ -262,81 +322,120 @@ function findClickedNode(node, x, y) {
   return undefined;
 }
 
-
-function gameSetUp() {
+function gameSetUp(lvl = 1) {
   bn = generateMap();
   bn.setNodeCoordinatesRequest();
+  lvlId = lvl;
 }
 
-
 //nasza nieskończona petla nasłuchiwania (pętla całej gry)
-function gameRun(){
+function gameRun() {
   bn.draw();
-  canvas.addEventListener("click", (event) => {
-    console.log("początek pętli nasłuchiwania")
+  canvas.addEventListener("click", function handleClick(event) {
+    console.log("początek pętli nasłuchiwania");
 
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    if(!isTriggerSet){        //jezeli nie jesteś w pomieszczeniu to szukaj czy poprawny node 
+    if (!isTriggerSet) {
       trigger = findClickedNode(bn.root, mouseX, mouseY);
     }
-    if(trigger && !isTriggerSet){
+    if (trigger && !isTriggerSet) {
       console.log(trigger);
       isTriggerSet = true;
-      gsap.to('#overlappingDiv', {
+      gsap.to("#overlappingDiv", {
         opacity: 1,
         repeat: 3,
         yoyo: true,
         duration: 0.4,
-        onComplete(){
-          gsap.to('#overlappingDiv', {
+        onComplete() {
+          gsap.to("#overlappingDiv", {
             opacity: 1,
             duration: 0.4,
-            onComplete(){
+            onComplete() {
               room_img.src = trigger.scene;
-              animateRoom(trigger);
-              gsap.to('#overlappingDiv',{
+              heroObj = bn.searchNodeByName(bn.root, "hero").data;
+              roomRun(trigger, heroObj);
+              gsap.to("#overlappingDiv", {
                 opacity: 0,
                 duration: 0.4,
-              })
-            }
-          })
-        }
+              });
+              canvas.removeEventListener("click", handleClick);
+            },
+          });
+        },
       });
     }
-    ctx.drawImage(map_img,0,0);
+    ctx.drawImage(map_img, 0, 0);
     bn.draw();
   });
 }
 
-function animateRoom(obj){
-  window.requestAnimationFrame(animateRoom);
-  console.log('animate');
+function roomRun(room, heroObj) {
+  if (room.name == "Odpoczynek") {
+    if (heroObj.psyche < 3) {
+      heroObj.psyche += 1;
+    }
+    isTriggerSet = false;
+    console.log("odpoczynek");
+    return;
+  } else if (room.name == "Terapia") {
+    console.log("terapia");
+    return;
+  } else if (room.name == "Sklep") {
+    console.log("sklep");
+    return;
+  } else if (room.name == "JobInt") {
+    console.log("jobint");
+    return;
+  } else if (room.name == "Walka") {
+    const enemyArr = generateEnemies(lvlId);
+    animateFight(room, heroObj, enemyArr);
+    return;
+  }
+}
+
+function animateFight(room, heroObj, enemies) {
+  window.requestAnimationFrame(() => animateFight(room, heroObj, enemies));
+  console.log("animate");
   ctx.drawImage(room_img, 0, 0);
+  const imgHero = new Image();
+  imgHero.src = heroObj.image;
+  for (let i = 0; i < enemies.length; i++) {
+    const enemy = enemies[i];
+    const imgEnemy = new Image();
+    imgEnemy.src = enemy.image;
+    ctx.drawImage(imgEnemy, 500 + 110 * i, 320, 150, 150);
+    ctx.drawImage(imgHero, 100, 320, 150, 150);
+  }
+  canvas.addEventListener("click", function handleClick(event) {
+    console.log("Mouse clicked fight");
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+  });
 }
 
 var canvas = document.getElementById("game_window");
 const ctx = canvas.getContext("2d");
 
-canvas.height = 576
-canvas.width = 1024
+canvas.height = 576;
+canvas.width = 1024;
 
-ctx.fillStyle = 'black';
-ctx.fillRect(0,0, canvas.width, canvas.height);
-const map_img = new Image()
-map_img.src = '../public/map_game.png';
+ctx.fillStyle = "black";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+const map_img = new Image();
+map_img.src = "../public/map_game.png";
 
 const room_img = new Image();
 var isTriggerSet = false;
 
-console.log("przed game set up")
+console.log("przed game set up");
 
 gameSetUp();
 
-console.log("po game set up")
+console.log("po game set up");
 
 map_img.onload = () => {
-  console.log("img on load")
-  ctx.drawImage(map_img,0,0)
+  console.log("img on load");
+  ctx.drawImage(map_img, 0, 0);
   gameRun();
-}
+};

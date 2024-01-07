@@ -160,13 +160,26 @@ function shuffleMapArray(array) {
   }
 }
 
-//to bedzie miejsce w którym jest gracz, nieinteraktywny pokój
+class Spell {
+  constructor(num) {
+    this.id = num;
+    this.damage = 50;
+    this.spellTarget = "enemy";
+    this.name = "Spell " + num;
+  }
+}
+
 class roomHero {
   constructor() {
     this.name = "hero";
     this.image = "../public/mag.png";
     this.hp = 100;
     this.psyche = 3;
+    this.spells = [];
+    for (let i = 0; i < 4; i++) {
+      const spell = new Spell(i);
+      this.spells.push(spell);
+    }
   }
 }
 
@@ -285,7 +298,8 @@ function generateEnemies(lvl) {
   }
   for (let i = enemiesNumber; i > 0; i--) {
     const enemyId = Math.floor(Math.random() * lvl);
-    enemies.push(totalEnemies[enemyId]);
+    const newEnemy = new totalEnemies[enemyId].constructor();
+    enemies.push(newEnemy);
   }
   return enemies;
 }
@@ -322,14 +336,57 @@ function findClickedNode(node, x, y) {
   return undefined;
 }
 
+function findClickedEnemy(x, y, numberOfEnemies, enemies) {
+  if (
+    x >= 500 &&
+    x <= 630 &&
+    y >= 320 &&
+    y <= 470 &&
+    numberOfEnemies >= 1 &&
+    enemies[0].hp > 0
+  ) {
+    return 0;
+  }
+  if (
+    x > 630 &&
+    x <= 760 &&
+    y >= 320 &&
+    y <= 470 &&
+    numberOfEnemies >= 2 &&
+    enemies[1].hp > 0
+  ) {
+    return 1;
+  }
+  if (
+    x > 760 &&
+    x <= 890 &&
+    y >= 320 &&
+    y <= 470 &&
+    numberOfEnemies >= 3 &&
+    enemies[2].hp > 0
+  ) {
+    return 2;
+  }
+  if (
+    x > 890 &&
+    x <= 970 &&
+    y >= 320 &&
+    y <= 470 &&
+    numberOfEnemies >= 4 &&
+    enemies[3].hp > 0
+  ) {
+    return 3;
+  }
+}
+
 function gameSetUp(lvl = 1) {
   bn = generateMap();
   bn.setNodeCoordinatesRequest();
   lvlId = lvl;
 }
 
-//nasza nieskończona petla nasłuchiwania (pętla całej gry)
 function gameRun() {
+  ctx.drawImage(map_img, 0, 0);
   bn.draw();
   canvas.addEventListener("click", function handleClick(event) {
     console.log("początek pętli nasłuchiwania");
@@ -388,15 +445,52 @@ function roomRun(room, heroObj) {
     console.log("jobint");
     return;
   } else if (room.name == "Walka") {
-    const enemyArr = generateEnemies(lvlId);
-    animateFight(room, heroObj, enemyArr);
-    return;
+    gsap.to("#spell_toolbar", {
+      opacity: 1,
+      pointerEvents: "auto",
+    });
+    enemies = generateEnemies(lvlId);
+    buttons = document.querySelectorAll("button");
+    animateFight(room, heroObj, enemies);
   }
 }
 
 function animateFight(room, heroObj, enemies) {
+  let allEnemiesDead = true;
+  for (let i = 0; i < enemies.length; i++) {
+    if (enemies[i].hp > 0) {
+      allEnemiesDead = false;
+      break;
+    }
+  }
+  if (allEnemiesDead) {
+    isTriggerSet = false;
+    gsap.to("#spell_toolbar", {
+      opacity: 0,
+      pointerEvents: "none",
+    });
+    gsap.to("#overlappingDiv", {
+      opacity: 1,
+      repeat: 3,
+      yoyo: true,
+      duration: 0.4,
+      onComplete() {
+        gsap.to("#overlappingDiv", {
+          opacity: 1,
+          duration: 0.4,
+          onComplete() {
+            gameRun();
+            gsap.to("#overlappingDiv", {
+              opacity: 0,
+              duration: 0.4,
+            });
+          },
+        });
+      },
+    });
+    return;
+  }
   window.requestAnimationFrame(() => animateFight(room, heroObj, enemies));
-  console.log("animate");
   ctx.drawImage(room_img, 0, 0);
   const imgHero = new Image();
   imgHero.src = heroObj.image;
@@ -404,13 +498,35 @@ function animateFight(room, heroObj, enemies) {
     const enemy = enemies[i];
     const imgEnemy = new Image();
     imgEnemy.src = enemy.image;
-    ctx.drawImage(imgEnemy, 500 + 110 * i, 320, 150, 150);
+    if (enemy.hp > 0) {
+      ctx.drawImage(imgEnemy, 500 + 110 * i, 320, 150, 150);
+      if (markedObj == i) {
+        const markerImg = new Image();
+        markerImg.src = "../public/board_icons/marker.png";
+        ctx.drawImage(markerImg, 500 + 110 * i, 320, 150, 150);
+      }
+    }
     ctx.drawImage(imgHero, 100, 320, 150, 150);
   }
   canvas.addEventListener("click", function handleClick(event) {
-    console.log("Mouse clicked fight");
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    markedObj = findClickedEnemy(mouseX, mouseY, enemies.length, enemies);
+  });
+  buttons.forEach(function (button) {
+    if (button.clickListener) {
+      button.removeEventListener("click", button.clickListener);
+    }
+    button.clickListener = function (event) {
+      if (heroObj.spells[event.target.id].spellTarget === "enemy") {
+        if (markedObj !== null && markedObj !== undefined) {
+          enemies[markedObj].hp -= heroObj.spells[event.target.id].damage;
+          markedObj = null;
+        }
+      }
+    };
+
+    button.addEventListener("click", button.clickListener);
   });
 }
 
@@ -422,11 +538,13 @@ canvas.width = 1024;
 
 ctx.fillStyle = "black";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-const map_img = new Image();
-map_img.src = "../public/map_game.png";
+const map_img = new Image(); //obrazek mapy
+map_img.src = "../public/map_game.png"; //ścieżka do obrazka mapy
 
-const room_img = new Image();
-var isTriggerSet = false;
+const room_img = new Image(); //obrazek sceny pokoju
+var isTriggerSet = false; //czy kliknięto na pokój
+var markedObj = null; //który przeciwnik jest zaznaczony
+var enemies = []; //tablica przeciwników
 
 console.log("przed game set up");
 

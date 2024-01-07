@@ -1,48 +1,110 @@
 body {
-    font-family: sans-serif;
-    margin: 0;
-    background-color: black;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  header {
-    width: 100%;
-    height: 90px;
-    background: rgb(255, 251, 39);
-  }
-  
-  header h1 {
-    display: block;
-    margin: 0;
-    text-align: center;
-    font-size: 75px;
-    font-weight: bold;
-  }
-  
+  font-family: sans-serif;
+  margin: 0;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+}
 
-  .content {
-      flex: 1;
-      display: flex;
-      padding: 20px;
-      min-height: 65vh;
-      justify-content: center;
-  }
+header {
+  width: 100%;
+  height: 90px;
+  background: rgb(255, 251, 39);
+}
 
+header h1 {
+  display: block;
+  margin: 0;
+  text-align: center;
+  font-size: 75px;
+  font-weight: bold;
+}
 
-  /* Stopka */
-  footer {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      padding: 1rem;
-      background-color: black;
-      color: rgb(255, 251, 39);
-      text-align: center;
-  }
-  footer a{
-      color: rgb(255, 251, 39);
-      text-decoration: none;
-      font-weight: bold;
-  }
+.content {
+  flex: 1;
+  display: flex;
+  padding: 20px;
+  min-height: 65vh;
+  justify-content: center;
+}
+
+.toolbar {
+  background-color: black;
+  width: 1024px;
+  height: 80px;
+  position: absolute;
+  display: flex;
+  bottom: 50px;
+  margin: 0 auto;
+  border: 3px solid rgb(255, 251, 39);
+  opacity: 0;
+  pointer-events: none;
+}
+.content .content__hero_img {
+  height: auto;
+  width: 100px;
+  background-image: url("../public/mag.png");
+  background-size: cover;
+  display: inline-block;
+  filter: grayscale(100%) sepia(100%) saturate(200%) hue-rotate(-20deg)
+    brightness(100%);
+}
+
+.content .content__spells {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.content .content__info_sec {
+  font-family: "Press Start 2P", cursive;
+  color: rgb(255, 251, 39);
+  height: auto;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.content__info_sec p {
+  margin: 0;
+}
+
+.content__spells button {
+  margin: 2% 3%;
+  flex: 1;
+  color: rgb(255, 251, 39);
+  background-color: black;
+  cursor: pointer;
+  font-family: "Press Start 2P", cursive;
+  border: 2px solid rgb(255, 251, 39);
+  border-radius: 10px;
+  transition: all 0.5s;
+}
+
+.content__spells button:hover {
+  border-color: black;
+  background-color: rgb(255, 251, 39);
+  color: black;
+}
+.content__spells button:focus-visible {
+  outline: none;
+}
+
+/* Stopka */
+footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  background-color: black;
+  color: rgb(255, 251, 39);
+  text-align: center;
+}
+footer a {
+  color: rgb(255, 251, 39);
+  text-decoration: none;
+  font-weight: bold;
+}

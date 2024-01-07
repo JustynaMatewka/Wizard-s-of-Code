@@ -8,6 +8,10 @@
       href="../public/Shields/Shield 2/33.png"
       type="image/x-icon"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    />
     <title>Wizard's of Code</title>
   </head>
 
@@ -28,6 +32,27 @@
         "
       ></div>
       <canvas id="game_window"></canvas>
+
+      <div
+        id="map_toolbar"
+        class="toolbar"
+        style="opacity: 1; pointer-events: auto"
+      ></div>
+
+      <div id="spell_toolbar" class="toolbar">
+        <div class="content__hero_img"></div>
+        <div class="content__info_sec">
+          <p>HP</p>
+          <p>3/3</p>
+        </div>
+        <div class="content__spells">
+          <button id="0">Spell#0</button>
+          <button id="1">Spell#1</button>
+          <button id="2">Spell#2</button>
+          <button id="3">Spell#3</button>
+        </div>
+      </div>
+
       <script
         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
         integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="

@@ -163,7 +163,7 @@ function shuffleMapArray(array) {
 class Spell {
   constructor(num) {
     this.id = num;
-    this.damage = 50;
+    this.damage = 25;
     this.spellTarget = "enemy";
     this.name = "Spell " + num;
   }
@@ -173,8 +173,8 @@ class roomHero {
   constructor() {
     this.name = "hero";
     this.image = "../public/mag.png";
-    this.hp = 100;
-    this.psyche = 3;
+    this.hp = 69;
+    this.psyche = 1;
     this.spells = [];
     for (let i = 0; i < 4; i++) {
       const spell = new Spell(i);
@@ -231,6 +231,7 @@ class enemyBug {
     this.name = "Bug";
     this.image = "../public/enemy/bug.png";
     this.hp = 50;
+    this.maxHp = 50;
     this.attack = 5;
     this.lvl = 1;
   }
@@ -388,6 +389,8 @@ function gameSetUp(lvl = 1) {
 function gameRun() {
   ctx.drawImage(map_img, 0, 0);
   bn.draw();
+  heroObj = bn.searchNodeByName(bn.root, "hero").data;
+  psycheElement[0].innerText = heroObj.psyche;
   canvas.addEventListener("click", function handleClick(event) {
     console.log("początek pętli nasłuchiwania");
 
@@ -410,7 +413,6 @@ function gameRun() {
             duration: 0.4,
             onComplete() {
               room_img.src = trigger.scene;
-              heroObj = bn.searchNodeByName(bn.root, "hero").data;
               roomRun(trigger, heroObj);
               gsap.to("#overlappingDiv", {
                 opacity: 0,
@@ -434,6 +436,7 @@ function roomRun(room, heroObj) {
     }
     isTriggerSet = false;
     console.log("odpoczynek");
+    gameRun();
     return;
   } else if (room.name == "Terapia") {
     console.log("terapia");
@@ -491,6 +494,8 @@ function animateFight(room, heroObj, enemies) {
     return;
   }
   window.requestAnimationFrame(() => animateFight(room, heroObj, enemies));
+  hpElement.innerText = heroObj.hp;
+  psycheElement[1].innerText = heroObj.psyche;
   ctx.drawImage(room_img, 0, 0);
   const imgHero = new Image();
   imgHero.src = heroObj.image;
@@ -500,6 +505,9 @@ function animateFight(room, heroObj, enemies) {
     imgEnemy.src = enemy.image;
     if (enemy.hp > 0) {
       ctx.drawImage(imgEnemy, 500 + 110 * i, 320, 150, 150);
+      ctx.fillStyle = "red";
+      ctx.font = "bold 17px Arial";
+      ctx.fillText(`HP: ${enemy.hp}/${enemy.maxHp}`, 541 + 110 * i, 310);
       if (markedObj == i) {
         const markerImg = new Image();
         markerImg.src = "../public/board_icons/marker.png";
@@ -545,6 +553,8 @@ const room_img = new Image(); //obrazek sceny pokoju
 var isTriggerSet = false; //czy kliknięto na pokój
 var markedObj = null; //który przeciwnik jest zaznaczony
 var enemies = []; //tablica przeciwników
+var hpElement = document.getElementsByClassName("hp")[0]; //hp selector
+var psycheElement = document.getElementsByClassName("psyche"); //psyche selector
 
 console.log("przed game set up");
 

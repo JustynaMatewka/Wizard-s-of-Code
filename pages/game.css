@@ -68,7 +68,8 @@ header h1 {
 }
 
 .content__info_sec p {
-  margin: 0;
+  margin: 3px 0;
+  font-size: 13px;
 }
 
 .content__spells button {

@@ -145,8 +145,8 @@ class BinaryTree {
     return null;
   }
 
-  updateY(node = this.root , y) {
-    if(node){
+  updateY(node = this.root, y) {
+    if (node) {
       node.y -= y;
       this.updateY(node.left, y);
       this.updateY(node.right, y);
@@ -181,8 +181,8 @@ class roomHero {
   constructor() {
     this.name = "hero";
     this.image = "../public/mag.png";
-    this.hp = 69;
-    this.psyche = 1;
+    this.hp = 100;
+    this.psyche = 3;
     this.spells = [];
     for (let i = 0; i < 4; i++) {
       const spell = new Spell(i);
@@ -238,10 +238,32 @@ class enemyBug {
   constructor() {
     this.name = "Bug";
     this.image = "../public/enemy/bug.png";
-    this.hp = 50;
-    this.maxHp = 50;
-    this.attack = 5;
+    this.hp = 75;
+    this.maxHp = 75;
+    this.damage = 7;
     this.lvl = 1;
+    this.strikeNum = 2;
+    this.healNum = 2;
+    this.ultNum = 0;
+  }
+
+  attack(heroObj) {
+    const randomDamage = Math.floor(Math.random() * (this.damage / 2 + 1));
+    heroObj.hp -= this.damage + randomDamage;
+    console.log("attack za "+ (this.damage + randomDamage));
+  }
+  heal() {
+    const randomHeal = Math.floor(Math.random() * 30) + 1;
+    this.hp += randomHeal;
+    console.log("heal za "+ randomHeal);
+  }
+  strike(heroObj) {
+    heroObj.hp -= this.damage * 2;
+    console.log("strike za "+ (this.damage * 2));
+  }
+  ult() {
+    //chwilowo nie używane bo balans ucieknie
+    console.log("ult kontrolnie");
   }
 }
 
@@ -388,6 +410,40 @@ function findClickedEnemy(x, y, numberOfEnemies, enemies) {
   }
 }
 
+function finiteStateMachine(enemies, heroObj) {
+  for (let i = 0; i < enemies.length; i++) {
+    const randomDice = Math.floor(Math.random() * 20) + 1;
+    const enemy = enemies[i];
+    if (enemy.hp <= 0) {
+      continue;
+    }
+    if (randomDice > 15) {
+      enemy.attack(heroObj);
+    } else if (randomDice > 10) {
+      if (enemy.hp < enemy.maxHp / 2 && enemy.healNum > 0) {
+        enemy.heal();
+        enemy.healNum -= 1;
+      } else {
+        enemy.attack(heroObj);
+      }
+    } else if (randomDice > 5) {
+      if (enemy.strikeNum > 0) {
+        enemy.strike(heroObj);
+        enemy.strikeNum -= 1;
+      } else {
+        enemy.attack(heroObj);
+      }
+    } else {
+      if (enemy.ultNum > 0) {
+        enemy.ult(heroObj);
+        enemy.ultNum -= 1;
+      } else {
+        enemy.attack(heroObj);
+      }
+    }
+  }
+}
+
 function gameSetUp(lvl = 1) {
   bn = generateMap();
   bn.setNodeCoordinatesRequest();
@@ -410,8 +466,8 @@ function gameRun() {
     if (trigger && !isTriggerSet) {
       console.log(trigger);
       isTriggerSet = true;
-      bn.updateY(bn.root, mouseY-100);
-      mapPositionY -= mouseY-100;
+      bn.updateY(bn.root, mouseY - 100);
+      mapPositionY -= mouseY - 100;
       gsap.to("#overlappingDiv", {
         opacity: 1,
         repeat: 3,
@@ -542,6 +598,7 @@ function animateFight(room, heroObj, enemies) {
           markedObj = null;
         }
       }
+      finiteStateMachine(enemies, heroObj);
     };
 
     button.addEventListener("click", button.clickListener);

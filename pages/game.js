@@ -144,6 +144,14 @@ class BinaryTree {
 
     return null;
   }
+
+  updateY(node = this.root , y) {
+    if(node){
+      node.y -= y;
+      this.updateY(node.left, y);
+      this.updateY(node.right, y);
+    }
+  }
 }
 
 function getRandomElementFromArray(arr) {
@@ -387,7 +395,7 @@ function gameSetUp(lvl = 1) {
 }
 
 function gameRun() {
-  ctx.drawImage(map_img, 0, 0);
+  ctx.drawImage(map_img, 0, mapPositionY);
   bn.draw();
   heroObj = bn.searchNodeByName(bn.root, "hero").data;
   psycheElement[0].innerText = heroObj.psyche;
@@ -402,6 +410,8 @@ function gameRun() {
     if (trigger && !isTriggerSet) {
       console.log(trigger);
       isTriggerSet = true;
+      bn.updateY(bn.root, mouseY-100);
+      mapPositionY -= mouseY-100;
       gsap.to("#overlappingDiv", {
         opacity: 1,
         repeat: 3,
@@ -424,7 +434,7 @@ function gameRun() {
         },
       });
     }
-    ctx.drawImage(map_img, 0, 0);
+    ctx.drawImage(map_img, 0, mapPositionY);
     bn.draw();
   });
 }
@@ -555,6 +565,7 @@ var markedObj = null; //który przeciwnik jest zaznaczony
 var enemies = []; //tablica przeciwników
 var hpElement = document.getElementsByClassName("hp")[0]; //hp selector
 var psycheElement = document.getElementsByClassName("psyche"); //psyche selector
+var mapPositionY = 0; //pozycja rysowania mapy
 
 console.log("przed game set up");
 

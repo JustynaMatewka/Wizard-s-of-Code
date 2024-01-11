@@ -22,15 +22,17 @@
     <div class="content">
       <div
         id="overlappingDiv"
-        style="
-          background-color: black;
-          width: 1024px;
-          height: 576px;
-          position: absolute;
-          opacity: 0;
-          pointer-events: none;
-        "
+        class="overlapping"
+        style="opacity: 0; pointer-events: none"
       ></div>
+      <div
+        id="game_over"
+        class="overlapping"
+        style="opacity: 0; pointer-events: none"
+      >
+        <p>GAME OVER</p>
+        <a href="./game.html">PLAY AGAIN</a>
+      </div>
       <canvas id="game_window"></canvas>
 
       <div

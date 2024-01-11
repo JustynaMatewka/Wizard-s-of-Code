@@ -240,30 +240,29 @@ class enemyBug {
     this.image = "../public/enemy/bug.png";
     this.hp = 75;
     this.maxHp = 75;
-    this.damage = 7;
+    this.damage = 5;
     this.lvl = 1;
     this.strikeNum = 2;
     this.healNum = 2;
     this.ultNum = 0;
   }
 
-  attack(heroObj) {
+  attack(heroObj, enemies) {
     const randomDamage = Math.floor(Math.random() * (this.damage / 2 + 1));
     heroObj.hp -= this.damage + randomDamage;
-    console.log("attack za "+ (this.damage + randomDamage));
+    console.log("Bug attack: " + (this.damage + randomDamage));
   }
-  heal() {
+  heal(heroObj, enemies) {
     const randomHeal = Math.floor(Math.random() * 30) + 1;
     this.hp += randomHeal;
-    console.log("heal za "+ randomHeal);
+    console.log("Bug heal: " + randomHeal);
   }
-  strike(heroObj) {
+  strike(heroObj, enemies) {
     heroObj.hp -= this.damage * 2;
-    console.log("strike za "+ (this.damage * 2));
+    console.log("Bug strike: " + this.damage * 2);
   }
-  ult() {
-    //chwilowo nie używane bo balans ucieknie
-    console.log("ult kontrolnie");
+  ult(heroObj, enemies) {
+    this.attack(heroObj);
   }
 }
 
@@ -271,9 +270,33 @@ class enemy404 {
   constructor() {
     this.name = "404";
     this.image = "../public/enemy/404.png";
-    this.hp = 100;
-    this.attack = 10;
+    this.hp = 40;
+    this.maxHp = 40;
+    this.damage = 20;
     this.lvl = 2;
+    this.strikeNum = 1;
+    this.healNum = 1;
+    this.ultNum = 1;
+  }
+
+  attack(heroObj, enemies) {
+    heroObj.hp -= this.damage;
+    console.log("404 - attack: " + this.damage);
+  }
+  heal(heroObj, enemies) {
+    enemies.forEach((enemy) => {
+      enemy.strikeNum += 1;
+      enemy.ultNum += 1;
+    });
+    console.log("404 - przywrócenie umiejetności: ");
+  }
+  strike(heroObj, enemies) {
+    heroObj.hp -= this.damage * 2;
+    console.log("404 - strike: " + this.damage * 2);
+  }
+  ult(heroObj, enemies) {
+    heroObj.hp -= this.damage * 2;
+    console.log("404 ult: " + this.damage * 2);
   }
 }
 
@@ -281,9 +304,84 @@ class enemyErrOnLine9TheFileHas8Lines {
   constructor() {
     this.name = "Err On Line 9 the File Has 8 Lines";
     this.image = "../public/enemy/line.png";
-    this.hp = 50;
-    this.attack = 5;
-    this.lvl = 3;
+    this.hp = 100;
+    this.maxHp = 100;
+    this.damage = 1;
+    this.lvl = 2;
+    this.strikeNum = 1;
+    this.healNum = 1;
+    this.ultNum = 1;
+  }
+
+  attack(heroObj, enemies) {
+    const randomDamage = Math.floor(Math.random() * (this.damage * 9));
+    heroObj.hp -= this.damage + randomDamage;
+    console.log("Line - attack: " + (this.damage + randomDamage));
+  }
+  heal(heroObj, enemies) {
+    const randomHeal = Math.floor(Math.random() * 15) + 1;
+    enemies.forEach((enemy) => {
+      if (enemy.hp > 0) {
+        enemy.hp += randomHeal;
+        if (enemy.hp > enemy.maxHp) {
+          enemy.hp = enemy.maxHp;
+        }
+      }
+    });
+    console.log("Line - przywracanie Hp druzyny: " + randomHeal);
+  }
+  strike(heroObj, enemies) {
+    this.heal(heroObj, enemies);
+  }
+  ult(heroObj, enemies) {
+    this.heal(heroObj, enemies);
+  }
+}
+
+class enemySirDeadline {
+  constructor() {
+    this.name = "Sir Deadline";
+    this.image = "../public/enemy/deadline.png";
+    this.hp = 200;
+    this.maxHp = 200;
+    this.damage = 15;
+    this.lvl = 4;
+    this.strikeNum = 10;
+    this.healNum = 10;
+    this.ultNum = 10;
+  }
+
+  attack(heroObj, enemies) {
+    const randomDamage = Math.floor(Math.random() * this.damage);
+    heroObj.hp -= this.damage + randomDamage;
+    console.log("Sir Deadline - attack: " + (this.damage + randomDamage));
+  }
+  heal(heroObj, enemies) {
+    if (enemies.length < 4) {
+      enemies.push(new enemyErrOnLine9TheFileHas8Lines());
+      console.log("Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines");
+    }
+    else{
+      console.log("Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca");
+    }
+  }
+  strike(heroObj, enemies) {
+    if (enemies.length < 4) {
+      enemies.push(new enemy404());
+      console.log("Sir Deadline - summon: 404");
+    }
+    else{
+      console.log("Sir Deadline - summon: 404 - brak miejsca");
+    }
+  }
+  ult(heroObj, enemies) {
+    if (enemies.length < 4) {
+      enemies.push(new enemyBug());
+      console.log("Sir Deadline - summon: Bug");
+    }
+    else{
+      console.log("Sir Deadline - summon: Bug - brak miejsca");
+    }
   }
 }
 
@@ -417,28 +515,28 @@ function finiteStateMachine(enemies, heroObj) {
     if (enemy.hp <= 0) {
       continue;
     }
-    if (randomDice > 15) {
-      enemy.attack(heroObj);
-    } else if (randomDice > 10) {
+    if (randomDice > 14) {
+      enemy.attack(heroObj, enemies);
+    } else if (randomDice > 9) {
       if (enemy.hp < enemy.maxHp / 2 && enemy.healNum > 0) {
-        enemy.heal();
+        enemy.heal(heroObj, enemies);
         enemy.healNum -= 1;
       } else {
-        enemy.attack(heroObj);
+        enemy.attack(heroObj, enemies);
       }
-    } else if (randomDice > 5) {
+    } else if (randomDice > 4) {
       if (enemy.strikeNum > 0) {
-        enemy.strike(heroObj);
+        enemy.strike(heroObj, enemies);
         enemy.strikeNum -= 1;
       } else {
-        enemy.attack(heroObj);
+        enemy.attack(heroObj, enemies);
       }
     } else {
       if (enemy.ultNum > 0) {
-        enemy.ult(heroObj);
+        enemy.ult(heroObj, enemies);
         enemy.ultNum -= 1;
       } else {
-        enemy.attack(heroObj);
+        enemy.attack(heroObj, enemies);
       }
     }
   }
@@ -532,7 +630,7 @@ function animateFight(room, heroObj, enemies) {
       break;
     }
   }
-  if (allEnemiesDead) {
+  if (allEnemiesDead || heroObj.hp <= 0) {
     isTriggerSet = false;
     gsap.to("#spell_toolbar", {
       opacity: 0,
@@ -557,6 +655,23 @@ function animateFight(room, heroObj, enemies) {
         });
       },
     });
+    if (heroObj.hp <= 0) {
+      heroObj.psyche -= 1;
+      if (heroObj.psyche <= 0) {
+        gsap.to("#game_over", {
+          opacity: 1,
+          pointerEvents: "auto",
+        });
+        gsap.to("#map_toolbar", {
+          opacity: 0,
+          pointerEvents: "none",
+        });
+      }
+    }
+    buttons.forEach((button) =>
+      button.removeEventListener("click", button.clickListener)
+    );
+    heroObj.hp = 100;
     return;
   }
   window.requestAnimationFrame(() => animateFight(room, heroObj, enemies));
@@ -596,9 +711,9 @@ function animateFight(room, heroObj, enemies) {
         if (markedObj !== null && markedObj !== undefined) {
           enemies[markedObj].hp -= heroObj.spells[event.target.id].damage;
           markedObj = null;
+          finiteStateMachine(enemies, heroObj);
         }
       }
-      finiteStateMachine(enemies, heroObj);
     };
 
     button.addEventListener("click", button.clickListener);
@@ -624,14 +739,9 @@ var hpElement = document.getElementsByClassName("hp")[0]; //hp selector
 var psycheElement = document.getElementsByClassName("psyche"); //psyche selector
 var mapPositionY = 0; //pozycja rysowania mapy
 
-console.log("przed game set up");
-
 gameSetUp();
 
-console.log("po game set up");
-
 map_img.onload = () => {
-  console.log("img on load");
   ctx.drawImage(map_img, 0, 0);
   gameRun();
 };

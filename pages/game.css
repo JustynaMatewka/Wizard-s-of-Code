@@ -20,6 +20,39 @@ header h1 {
   font-weight: bold;
 }
 
+.overlapping {
+  background-color: black;
+  width: 1024px;
+  height: 576px;
+  position: absolute;
+  font-family: "Press Start 2P", cursive;
+  color: rgb(255, 251, 39);
+  text-align: center;
+  font-size: xx-large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.overlapping a {
+  background-color: rgb(255, 251, 39);
+  color: black;
+  padding: 1rem 1.2rem;
+  font-size: large;
+  font-family: "Press Start 2P", cursive;
+  border: 2px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.overlapping a:hover {
+  background-color: black;
+  color: rgb(255, 251, 39);
+  border: 2px solid rgb(255, 251, 39);
+}
+
 .content {
   padding: 20px;
   display: block;

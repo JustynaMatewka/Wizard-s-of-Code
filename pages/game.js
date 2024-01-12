@@ -191,6 +191,21 @@ class roomHero {
   }
 }
 
+class roomNext {
+  constructor() {
+    this.name = "next";
+    this.image = "../public/board_icons/next.png";
+  }
+}
+
+class roomBoss {
+  constructor() {
+    this.name = "boss";
+    this.image = "../public/board_icons/boss.png";
+    this.scene = "../public/rooms-scenes/FightRoomSCENE.png";
+  }
+}
+
 class roomFight {
   constructor() {
     this.name = "Walka";
@@ -341,7 +356,7 @@ class enemyErrOnLine9TheFileHas8Lines {
 class enemySirDeadline {
   constructor() {
     this.name = "Sir Deadline";
-    this.image = "../public/enemy/deadline.png";
+    this.image = "../public/enemy/sir_deadline.png";
     this.hp = 200;
     this.maxHp = 200;
     this.damage = 15;
@@ -358,36 +373,42 @@ class enemySirDeadline {
   }
   heal(heroObj, enemies) {
     if (enemies.length < 4) {
+      // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemyErrOnLine9TheFileHas8Lines());
       console.log("Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines");
-    }
-    else{
-      console.log("Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca");
+    } else {
+      console.log(
+        "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca"
+      );
     }
   }
   strike(heroObj, enemies) {
     if (enemies.length < 4) {
+      // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemy404());
       console.log("Sir Deadline - summon: 404");
-    }
-    else{
+    } else {
       console.log("Sir Deadline - summon: 404 - brak miejsca");
     }
   }
   ult(heroObj, enemies) {
     if (enemies.length < 4) {
+      // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemyBug());
       console.log("Sir Deadline - summon: Bug");
-    }
-    else{
+    } else {
       console.log("Sir Deadline - summon: Bug - brak miejsca");
     }
   }
 }
 
-function generateMap(levelsNumber = 4) {
+function generateMap(levelsNumber = 4, heroObj) {
   const binaryTree = new BinaryTree();
-  binaryTree.insert(new roomHero());
+  if (heroObj) {
+    binaryTree.insert(heroObj);
+  } else {
+    binaryTree.insert(new roomHero());
+  }
 
   utilityRooms = [
     new roomJobInterview(),
@@ -446,6 +467,25 @@ function findClickedNode(node, x, y) {
           const chosenRoom = node.data;
           node.data = node.parent.data;
           node.parent.data = new roomEmpty();
+          if (node.left == null && node.right == null) {
+            if (!endOfLvl) {
+              if (lvlId === 3) {
+                console.log("boss dodany");
+                node.left = new Node(new roomBoss());
+                node.left.y = node.y + 150;
+                node.left.x = node.x;
+                node.left.parent = node;
+                endOfLvl = true;
+              } else {
+                console.log("next dodany");
+                node.left = new Node(new roomNext());
+                node.left.y = node.y + 150;
+                node.left.x = node.x;
+                node.left.parent = node;
+                endOfLvl = true;
+              }
+            }
+          }
           return chosenRoom;
         }
       }
@@ -542,8 +582,8 @@ function finiteStateMachine(enemies, heroObj) {
   }
 }
 
-function gameSetUp(lvl = 1) {
-  bn = generateMap();
+function gameSetUp(lvl = 1, heroObj) {
+  bn = generateMap(4, heroObj);
   bn.setNodeCoordinatesRequest();
   lvlId = lvl;
 }
@@ -554,15 +594,14 @@ function gameRun() {
   heroObj = bn.searchNodeByName(bn.root, "hero").data;
   psycheElement[0].innerText = heroObj.psyche;
   canvas.addEventListener("click", function handleClick(event) {
-    console.log("początek pętli nasłuchiwania");
-
+    ctx.drawImage(map_img, 0, mapPositionY);
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    console.log(lvlId);
     if (!isTriggerSet) {
       trigger = findClickedNode(bn.root, mouseX, mouseY);
     }
     if (trigger && !isTriggerSet) {
-      console.log(trigger);
       isTriggerSet = true;
       bn.updateY(bn.root, mouseY - 100);
       mapPositionY -= mouseY - 100;
@@ -594,6 +633,7 @@ function gameRun() {
 }
 
 function roomRun(room, heroObj) {
+  console.log(room);
   if (room.name == "Odpoczynek") {
     if (heroObj.psyche < 3) {
       heroObj.psyche += 1;
@@ -601,22 +641,39 @@ function roomRun(room, heroObj) {
     isTriggerSet = false;
     console.log("odpoczynek");
     gameRun();
-    return;
   } else if (room.name == "Terapia") {
     console.log("terapia");
-    return;
+    isTriggerSet = false;
+    gameRun();
   } else if (room.name == "Sklep") {
     console.log("sklep");
-    return;
+    isTriggerSet = false;
+    gameRun();
   } else if (room.name == "JobInt") {
     console.log("jobint");
-    return;
+    isTriggerSet = false;
+    gameRun();
   } else if (room.name == "Walka") {
     gsap.to("#spell_toolbar", {
       opacity: 1,
       pointerEvents: "auto",
     });
     enemies = generateEnemies(lvlId);
+    buttons = document.querySelectorAll("button");
+    animateFight(room, heroObj, enemies);
+  } else if (room.name == "next") {
+    console.log("next room run");
+    isTriggerSet = false;
+    mapPositionY = 0;
+    endOfLvl = false;
+    gameSetUp(lvlId + 1, heroObj);
+    gameRun();
+  } else if (room.name == "boss") {
+    gsap.to("#spell_toolbar", {
+      opacity: 1,
+      pointerEvents: "auto",
+    });
+    enemies = [new enemySirDeadline()];
     buttons = document.querySelectorAll("button");
     animateFight(room, heroObj, enemies);
   }
@@ -657,7 +714,7 @@ function animateFight(room, heroObj, enemies) {
     });
     if (heroObj.hp <= 0) {
       heroObj.psyche -= 1;
-      if (heroObj.psyche <= 0) {
+      if (heroObj.psyche <= 0 || endOfLvl) {
         gsap.to("#game_over", {
           opacity: 1,
           pointerEvents: "auto",
@@ -738,6 +795,7 @@ var enemies = []; //tablica przeciwników
 var hpElement = document.getElementsByClassName("hp")[0]; //hp selector
 var psycheElement = document.getElementsByClassName("psyche"); //psyche selector
 var mapPositionY = 0; //pozycja rysowania mapy
+var endOfLvl = false; //czy koniec poziomu
 
 gameSetUp();
 

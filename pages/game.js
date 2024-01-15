@@ -171,7 +171,7 @@ function shuffleMapArray(array) {
 class Spell {
   constructor(num) {
     this.id = num;
-    this.damage = 25;
+    this.damage = 100;
     this.spellTarget = "enemy";
     this.name = "Spell " + num;
   }
@@ -462,7 +462,7 @@ function findClickedNode(node, x, y) {
       y >= node.y - 30 &&
       y <= node.y + 40
     ) {
-      if (node.data) {
+      if (node.data && node.parent) {
         if (node.parent.data.name == "hero") {
           const chosenRoom = node.data;
           node.data = node.parent.data;
@@ -597,7 +597,6 @@ function gameRun() {
     ctx.drawImage(map_img, 0, mapPositionY);
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    console.log(lvlId);
     if (!isTriggerSet) {
       trigger = findClickedNode(bn.root, mouseX, mouseY);
     }
@@ -615,7 +614,9 @@ function gameRun() {
             opacity: 1,
             duration: 0.4,
             onComplete() {
-              room_img.src = trigger.scene;
+              if (trigger.scene) {
+                room_img.src = trigger.scene;
+              }
               roomRun(trigger, heroObj);
               gsap.to("#overlappingDiv", {
                 opacity: 0,
@@ -635,20 +636,70 @@ function gameRun() {
 function roomRun(room, heroObj) {
   console.log(room);
   if (room.name == "Odpoczynek") {
+    isTriggerSet = false;
+    console.log("odpoczynek");
+    document.getElementsByClassName("custom_string")[0].innerText = "ZZZzzz...";
+    gsap.to("#custom", {
+      opacity: 1,
+      onComplete() {
+        gsap.to("#custom", {
+          duration: 7,
+          onComplete() {
+            gsap.to("#custom", {
+              opacity: 0,
+              duration: 1,
+              onComplete() {
+                gameRun();
+              },
+            });
+          },
+        });
+      },
+    });
+  } else if (room.name == "Terapia") {
+    console.log("terapia");
     if (heroObj.psyche < 3) {
       heroObj.psyche += 1;
     }
     isTriggerSet = false;
-    console.log("odpoczynek");
-    gameRun();
-  } else if (room.name == "Terapia") {
-    console.log("terapia");
-    isTriggerSet = false;
-    gameRun();
+    document.getElementsByClassName("custom_string")[0].innerText = "PSYCHE +1";
+    gsap.to("#custom", {
+      opacity: 1,
+      onComplete() {
+        gsap.to("#custom", {
+          duration: 7,
+          onComplete() {
+            gsap.to("#custom", {
+              opacity: 0,
+              duration: 1,
+              onComplete() {
+                gameRun();
+              },
+            });
+          },
+        });
+      },
+    });
   } else if (room.name == "Sklep") {
     console.log("sklep");
     isTriggerSet = false;
-    gameRun();
+    gsap.to("#shop", {
+      opacity: 1,
+      onComplete() {
+        gsap.to("#shop", {
+          duration: 7,
+          onComplete() {
+            gsap.to("#shop", {
+              opacity: 0,
+              duration: 1,
+              onComplete() {
+                gameRun();
+              },
+            });
+          },
+        });
+      },
+    });
   } else if (room.name == "JobInt") {
     console.log("jobint");
     isTriggerSet = false;

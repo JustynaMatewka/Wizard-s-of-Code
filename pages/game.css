@@ -47,6 +47,12 @@ header h1 {
   text-decoration: none;
 }
 
+.overlapping h2 {
+  background-color: rgb(255, 251, 39);
+  color: #000;
+  padding: 10px;
+}
+
 .overlapping a:hover {
   background-color: black;
   color: rgb(255, 251, 39);

@@ -582,7 +582,7 @@ function finiteStateMachine(enemies, heroObj) {
   }
 }
 
-function gameSetUp(lvl = 1, heroObj) {
+function gameSetUp(lvl = 3, heroObj) {
   bn = generateMap(4, heroObj);
   bn.setNodeCoordinatesRequest();
   lvlId = lvl;
@@ -740,32 +740,49 @@ function animateFight(room, heroObj, enemies) {
   }
   if (allEnemiesDead || heroObj.hp <= 0) {
     isTriggerSet = false;
-    gsap.to("#spell_toolbar", {
-      opacity: 0,
-      pointerEvents: "none",
-    });
-    gsap.to("#overlappingDiv", {
-      opacity: 1,
-      repeat: 3,
-      yoyo: true,
-      duration: 0.4,
-      onComplete() {
-        gsap.to("#overlappingDiv", {
-          opacity: 1,
-          duration: 0.4,
-          onComplete() {
-            gameRun();
-            gsap.to("#overlappingDiv", {
-              opacity: 0,
-              duration: 0.4,
-            });
-          },
-        });
-      },
-    });
+    if (enemies && enemies.some((enemy) => enemy instanceof enemySirDeadline)) {
+      document.getElementsByClassName("game_over")[0].innerText = "YOU WIN";
+      gsap.to("#game_over", {
+        opacity: 1,
+        pointerEvents: "auto",
+      });
+      gsap.to("#map_toolbar", {
+        opacity: 0,
+        pointerEvents: "none",
+      });
+      gsap.to("#spell_toolbar", {
+        opacity: 0,
+        pointerEvents: "none",
+      });
+    } else {
+      gsap.to("#spell_toolbar", {
+        opacity: 0,
+        pointerEvents: "none",
+      });
+      gsap.to("#overlappingDiv", {
+        opacity: 1,
+        repeat: 3,
+        yoyo: true,
+        duration: 0.4,
+        onComplete() {
+          gsap.to("#overlappingDiv", {
+            opacity: 1,
+            duration: 0.4,
+            onComplete() {
+              gameRun();
+              gsap.to("#overlappingDiv", {
+                opacity: 0,
+                duration: 0.4,
+              });
+            },
+          });
+        },
+      });
+    }
     if (heroObj.hp <= 0) {
       heroObj.psyche -= 1;
       if (heroObj.psyche <= 0 || endOfLvl) {
+        document.getElementsByClassName("game_over")[0].innerText = "GAME OVER";
         gsap.to("#game_over", {
           opacity: 1,
           pointerEvents: "auto",

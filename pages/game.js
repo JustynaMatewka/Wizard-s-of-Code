@@ -871,3 +871,16 @@ map_img.onload = () => {
   ctx.drawImage(map_img, 0, 0);
   gameRun();
 };
+
+
+//Wyświetlanie legendy
+document.getElementById('showLegendBtn').addEventListener('click', function() {
+  document.getElementById('popup').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+});
+
+document.getElementById('closeLegendBtn').addEventListener('click', function() {
+  document.getElementById('popup').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+});
+

@@ -265,16 +265,22 @@ class enemyBug {
   attack(heroObj, enemies) {
     const randomDamage = Math.floor(Math.random() * (this.damage / 2 + 1));
     heroObj.hp -= this.damage + randomDamage;
-    console.log("Bug attack: " + (this.damage + randomDamage));
+    const attackMessage = "Bug attack: " + (this.damage + randomDamage);
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   heal(heroObj, enemies) {
     const randomHeal = Math.floor(Math.random() * 30) + 1;
     this.hp += randomHeal;
-    console.log("Bug heal: " + randomHeal);
+    const attackMessage = "Bug heal: " + randomHeal;
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   strike(heroObj, enemies) {
     heroObj.hp -= this.damage * 2;
-    console.log("Bug strike: " + this.damage * 2);
+    const attackMessage = "Bug strike: " + this.damage * 2;
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   ult(heroObj, enemies) {
     this.attack(heroObj);
@@ -296,22 +302,30 @@ class enemy404 {
 
   attack(heroObj, enemies) {
     heroObj.hp -= this.damage;
-    console.log("404 - attack: " + this.damage);
+    const attackMessage = "404 - attack: " + this.damage;
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   heal(heroObj, enemies) {
     enemies.forEach((enemy) => {
       enemy.strikeNum += 1;
       enemy.ultNum += 1;
     });
-    console.log("404 - przywrócenie umiejetności: ");
+    const attackMessage = "404 - przywrócenie umiejetności: ";
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   strike(heroObj, enemies) {
     heroObj.hp -= this.damage * 2;
-    console.log("404 - strike: " + this.damage * 2);
+    const attackMessage = "404 - strike: " + this.damage * 2;
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   ult(heroObj, enemies) {
     heroObj.hp -= this.damage * 2;
-    console.log("404 ult: " + this.damage * 2);
+    const attackMessage = "404 ult: " + this.damage * 2;
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
 }
 
@@ -331,7 +345,9 @@ class enemyErrOnLine9TheFileHas8Lines {
   attack(heroObj, enemies) {
     const randomDamage = Math.floor(Math.random() * (this.damage * 9));
     heroObj.hp -= this.damage + randomDamage;
-    console.log("Line - attack: " + (this.damage + randomDamage));
+    const attackMessage = "Line - attack: " + (this.damage + randomDamage);
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   heal(heroObj, enemies) {
     const randomHeal = Math.floor(Math.random() * 15) + 1;
@@ -343,7 +359,9 @@ class enemyErrOnLine9TheFileHas8Lines {
         }
       }
     });
-    console.log("Line - przywracanie Hp druzyny: " + randomHeal);
+    const attackMessage = "Line - przywracanie Hp druzyny: " + randomHeal;
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   strike(heroObj, enemies) {
     this.heal(heroObj, enemies);
@@ -369,35 +387,47 @@ class enemySirDeadline {
   attack(heroObj, enemies) {
     const randomDamage = Math.floor(Math.random() * this.damage);
     heroObj.hp -= this.damage + randomDamage;
-    console.log("Sir Deadline - attack: " + (this.damage + randomDamage));
+    const attackMessage = "Sir Deadline - attack: " + (this.damage + randomDamage);
+    console.log(attackMessage);
+    enemyAttackMessage(attackMessage);
   }
   heal(heroObj, enemies) {
     if (enemies.length < 4) {
       // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemyErrOnLine9TheFileHas8Lines());
-      console.log("Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines");
+      const attackMessage = "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines";
+      console.log(attackMessage);
+      enemyAttackMessage(attackMessage);
     } else {
-      console.log(
-        "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca"
-      );
+      const attackMessage = "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca";
+      console.log(attackMessage);
+      enemyAttackMessage(attackMessage);
     }
   }
   strike(heroObj, enemies) {
     if (enemies.length < 4) {
       // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemy404());
-      console.log("Sir Deadline - summon: 404");
+      const attackMessage = "Sir Deadline - summon: 404";
+      console.log(attackMessage);
+      enemyAttackMessage(attackMessage);
     } else {
-      console.log("Sir Deadline - summon: 404 - brak miejsca");
+      const attackMessage = "Sir Deadline - summon: 404 - brak miejsca";
+      console.log(attackMessage);
+      enemyAttackMessage(attackMessage);
     }
   }
   ult(heroObj, enemies) {
     if (enemies.length < 4) {
       // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemyBug());
-      console.log("Sir Deadline - summon: Bug");
+      const attackMessage = "Sir Deadline - summon: Bug";
+      console.log(attackMessage);
+      enemyAttackMessage(attackMessage);
     } else {
-      console.log("Sir Deadline - summon: Bug - brak miejsca");
+      const attackMessage = "Sir Deadline - summon: Bug - brak miejsca";
+      console.log(attackMessage);
+      enemyAttackMessage(attackMessage);
     }
   }
 }
@@ -634,7 +664,7 @@ function gameRun() {
 }
 
 function roomRun(room, heroObj) {
-  console.log(room);
+  //console.log(room);
   if (room.name == "Odpoczynek") {
     isTriggerSet = false;
     console.log("odpoczynek");
@@ -705,6 +735,14 @@ function roomRun(room, heroObj) {
     isTriggerSet = false;
     gameRun();
   } else if (room.name == "Walka") {
+    console.log("Walka");
+    let roomInfoElement = document.getElementById("consoleLog");
+    roomInfoElement.innerText = "Current Room: " + room.name;
+
+    gsap.to("#consoleLog", {
+      opacity: 1,
+      pointerEvents: "auto",
+    });
     gsap.to("#spell_toolbar", {
       opacity: 1,
       pointerEvents: "auto",
@@ -721,6 +759,10 @@ function roomRun(room, heroObj) {
     gameRun();
   } else if (room.name == "boss") {
     gsap.to("#spell_toolbar", {
+      opacity: 1,
+      pointerEvents: "auto",
+    });
+    gsap.to("#consoleLog", {
       opacity: 1,
       pointerEvents: "auto",
     });
@@ -756,6 +798,10 @@ function animateFight(room, heroObj, enemies) {
       });
     } else {
       gsap.to("#spell_toolbar", {
+        opacity: 0,
+        pointerEvents: "none",
+      });
+      gsap.to("#consoleLog", {
         opacity: 0,
         pointerEvents: "none",
       });
@@ -844,6 +890,26 @@ function animateFight(room, heroObj, enemies) {
     button.addEventListener("click", button.clickListener);
   });
 }
+
+//  Dwie funkcje do wyświetlania przebiegu walki
+let roomInfoElement = document.getElementById("consoleLog");
+
+function updateConsoleLog(attackInfo) {
+  if (roomInfoElement) {
+    const logMessage = document.createElement('p');
+    logMessage.innerText = attackInfo.message;
+    roomInfoElement.appendChild(logMessage);
+  }
+}
+
+function enemyAttackMessage(mess) {
+  const attackInfo = {
+    message: mess,
+  };
+
+  updateConsoleLog(attackInfo);
+}
+
 
 var canvas = document.getElementById("game_window");
 const ctx = canvas.getContext("2d");

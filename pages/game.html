@@ -34,6 +34,20 @@
         <a href="./game.html">PLAY AGAIN</a>
       </div>
       <div
+        id="terminal_overlapping"
+        class="overlapping"
+        style="opacity: 0; pointer-events: none"
+      >
+        <form id="code_form">
+          <label for="data">Start coding:</label>
+          <textarea type="text" id="data" name="data"></textarea>
+          <button type="button" onclick="saveData()" class="compile_btn">
+            KOMPILUJ
+          </button>
+        </form>
+        <button id="x_terminal" class="x_btn">X</button>
+      </div>
+      <div
         id="shop"
         class="overlapping"
         style="opacity: 0; pointer-events: none"
@@ -52,16 +66,14 @@
 
       <canvas id="game_window"></canvas>
 
-      <div 
-        class="content__console_log" 
+      <div
+        class="content__console_log"
         id="consoleLog"
-        style="opacity: 0; pointer-events: auto">
-
+        style="opacity: 0; pointer-events: auto"
+      >
         <p id="roomLog"></p>
-
       </div>
 
-      
       <div
         id="map_toolbar"
         class="toolbar"
@@ -81,32 +93,74 @@
         </div>
         <div id="overlay"></div>
         <div id="popup">
-            <h2>Legenda</h2>
-            <p>Opis pokoi w grze:</p>
-            <ul>
-                <li>
-                  <img src="../public/board_icons/fight_room.png" alt="Pokój 1" width="35" height="35"> Pokój walki
-                </li>
-                <li>
-                  <img src="../public/board_icons/rest_room.png" alt="Pokój 2" width="35" height="35"> Pokój odpoczynku
-                </li>
-                <li>
-                  <img src="../public/board_icons/therapy_room.png" alt="Pokój 3" width="35" height="35"> Pokój leczniczy
-                </li>
-                <li>
-                  <img src="../public/board_icons/job_room.png" alt="Pokój 4" width="35" height="35"> Pokój job-interview
-                </li>
-                <li>
-                  <img src="../public/board_icons/shop_room.png" alt="Pokój 5" width="35" height="35"> Sklep
-                </li>
-                <li>
-                  <img src="../public/board_icons/next.png" alt="Pokój 6" width="35" height="35"> Przejście do kolejnego poziomu
-                </li>
-                <li>
-                  <img src="../public/board_icons/boss.png" alt="Pokój 7" width="35" height="35"> Walka z bossem - ostatni poziom
-                </li>
-            </ul>
-            <button id="closeLegendBtn">Zamknij</button>
+          <h2>Legenda</h2>
+          <p>Opis pokoi w grze:</p>
+          <ul>
+            <li>
+              <img
+                src="../public/board_icons/fight_room.png"
+                alt="Pokój 1"
+                width="35"
+                height="35"
+              />
+              Pokój walki
+            </li>
+            <li>
+              <img
+                src="../public/board_icons/rest_room.png"
+                alt="Pokój 2"
+                width="35"
+                height="35"
+              />
+              Pokój odpoczynku
+            </li>
+            <li>
+              <img
+                src="../public/board_icons/therapy_room.png"
+                alt="Pokój 3"
+                width="35"
+                height="35"
+              />
+              Pokój leczniczy
+            </li>
+            <li>
+              <img
+                src="../public/board_icons/job_room.png"
+                alt="Pokój 4"
+                width="35"
+                height="35"
+              />
+              Pokój job-interview
+            </li>
+            <li>
+              <img
+                src="../public/board_icons/shop_room.png"
+                alt="Pokój 5"
+                width="35"
+                height="35"
+              />
+              Sklep
+            </li>
+            <li>
+              <img
+                src="../public/board_icons/next.png"
+                alt="Pokój 6"
+                width="35"
+                height="35"
+              />
+              Przejście do kolejnego poziomu
+            </li>
+            <li>
+              <img
+                src="../public/board_icons/boss.png"
+                alt="Pokój 7"
+                width="35"
+                height="35"
+              />
+              Walka z bossem - ostatni poziom
+            </li>
+          </ul>
+          <button id="closeLegendBtn">Zamknij</button>
         </div>
       </div>
 

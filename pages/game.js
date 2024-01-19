@@ -387,7 +387,8 @@ class enemySirDeadline {
   attack(heroObj, enemies) {
     const randomDamage = Math.floor(Math.random() * this.damage);
     heroObj.hp -= this.damage + randomDamage;
-    const attackMessage = "Sir Deadline - attack: " + (this.damage + randomDamage);
+    const attackMessage =
+      "Sir Deadline - attack: " + (this.damage + randomDamage);
     console.log(attackMessage);
     enemyAttackMessage(attackMessage);
   }
@@ -395,11 +396,13 @@ class enemySirDeadline {
     if (enemies.length < 4) {
       // enemies = enemies.filter((enemy) => enemy.hp > 0);
       enemies.push(new enemyErrOnLine9TheFileHas8Lines());
-      const attackMessage = "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines";
+      const attackMessage =
+        "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines";
       console.log(attackMessage);
       enemyAttackMessage(attackMessage);
     } else {
-      const attackMessage = "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca";
+      const attackMessage =
+        "Sir Deadline - summon: enemyErrOnLine9TheFileHas8Lines - brak miejsca";
       console.log(attackMessage);
       enemyAttackMessage(attackMessage);
     }
@@ -896,7 +899,7 @@ let roomInfoElement = document.getElementById("consoleLog");
 
 function updateConsoleLog(attackInfo) {
   if (roomInfoElement) {
-    const logMessage = document.createElement('p');
+    const logMessage = document.createElement("p");
     logMessage.innerText = attackInfo.message;
     roomInfoElement.appendChild(logMessage);
   }
@@ -909,7 +912,6 @@ function enemyAttackMessage(mess) {
 
   updateConsoleLog(attackInfo);
 }
-
 
 var canvas = document.getElementById("game_window");
 const ctx = canvas.getContext("2d");
@@ -938,15 +940,54 @@ map_img.onload = () => {
   gameRun();
 };
 
-
 //Wyświetlanie legendy
-document.getElementById('showLegendBtn').addEventListener('click', function() {
-  document.getElementById('popup').style.display = 'block';
-  document.getElementById('overlay').style.display = 'block';
+document.getElementById("showLegendBtn").addEventListener("click", function () {
+  document.getElementById("popup").style.display = "block";
+  document.getElementById("overlay").style.display = "block";
 });
 
-document.getElementById('closeLegendBtn').addEventListener('click', function() {
-  document.getElementById('popup').style.display = 'none';
-  document.getElementById('overlay').style.display = 'none';
+document
+  .getElementById("closeLegendBtn")
+  .addEventListener("click", function () {
+    document.getElementById("popup").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+  });
+
+//Terminal
+document.getElementById("terminal").addEventListener("click", function () {
+  console.log("terminal");
+  gsap.to("#terminal_overlapping", {
+    opacity: 1,
+    pointerEvents: "auto",
+  });
+  gsap.to("#map_toolbar", {
+    opacity: 0,
+    pointerEvents: "none",
+  });
 });
 
+document.getElementById("x_terminal").addEventListener("click", function () {
+  gsap.to("#terminal_overlapping", {
+    opacity: 0,
+    pointerEvents: "none",
+  });
+  gsap.to("#map_toolbar", {
+    opacity: 1,
+    pointerEvents: "auto",
+  });
+});
+
+function saveData() {
+  var inputData = document.getElementById("data").value;
+
+  fetch("http://localhost:3000/saveData", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "data=" + encodeURIComponent(inputData),
+  })
+    .then((response) => response.text())
+    .then((message) => alert(message))
+    .catch((error) => console.error(error));
+}

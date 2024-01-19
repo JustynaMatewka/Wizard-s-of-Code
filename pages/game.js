@@ -955,7 +955,6 @@ document
 
 //Terminal
 document.getElementById("terminal").addEventListener("click", function () {
-  console.log("terminal");
   gsap.to("#terminal_overlapping", {
     opacity: 1,
     pointerEvents: "auto",

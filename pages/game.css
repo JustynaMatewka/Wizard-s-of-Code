@@ -65,6 +65,20 @@ header h1 {
   right: 10px;
 }
 
+.spell_list_compile {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+
+.result_con {
+  position: absolute;
+  width: 18%;
+  top: 100px;
+  right: -20px;
+  font-size: 12px;
+}
+
 form {
   flex: 1;
   display: flex;
@@ -80,7 +94,7 @@ form label {
   margin: 10px 0;
 }
 form textarea {
-  width: 100%;
+  width: 90%;
   height: 80%;
   background-color: black;
   color: rgb(39, 255, 226);

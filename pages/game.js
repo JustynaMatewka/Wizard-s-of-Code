@@ -932,6 +932,7 @@ var hpElement = document.getElementsByClassName("hp")[0]; //hp selector
 var psycheElement = document.getElementsByClassName("psyche"); //psyche selector
 var mapPositionY = 0; //pozycja rysowania mapy
 var endOfLvl = false; //czy koniec poziomu
+var spell_score = 0; //wynik ostatniego skompilowanego czaru
 
 gameSetUp();
 
@@ -986,7 +987,15 @@ function saveData() {
     },
     body: "data=" + encodeURIComponent(inputData),
   })
-    .then((response) => response.text())
-    .then((message) => alert(message))
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.text();
+    })
+    .then((data) => {
+      spell_score = data;
+      document.getElementById("spell_score").innerText = spell_score;
+    })
     .catch((error) => console.error(error));
 }

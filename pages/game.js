@@ -171,7 +171,7 @@ function shuffleMapArray(array) {
 class Spell {
   constructor(num) {
     this.id = num;
-    this.damage = 100;
+    this.damage = 20;
     this.spellTarget = "enemy";
     this.name = "Spell " + num;
   }
@@ -615,7 +615,7 @@ function finiteStateMachine(enemies, heroObj) {
   }
 }
 
-function gameSetUp(lvl = 3, heroObj) {
+function gameSetUp(lvl = 1, heroObj) {
   bn = generateMap(4, heroObj);
   bn.setNodeCoordinatesRequest();
   lvlId = lvl;
@@ -999,3 +999,20 @@ function saveData() {
     })
     .catch((error) => console.error(error));
 }
+
+document.getElementById("compile_spell_1").addEventListener("click", function () {
+  find_hero = bn.searchNodeByName(bn.root, "hero");
+  find_hero.data.spells[0].damage = spell_score;
+});
+document.getElementById("compile_spell_2").addEventListener("click", function () {
+  find_hero = bn.searchNodeByName(bn.root, "hero");
+  find_hero.data.spells[1].damage = spell_score;
+});
+document.getElementById("compile_spell_3").addEventListener("click", function () {
+  find_hero = bn.searchNodeByName(bn.root, "hero");
+  find_hero.data.spells[2].damage = spell_score;
+});
+document.getElementById("compile_spell_4").addEventListener("click", function () {
+  find_hero = bn.searchNodeByName(bn.root, "hero");
+  find_hero.data.spells[3].damage = spell_score;
+});

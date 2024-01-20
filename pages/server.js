@@ -21,7 +21,8 @@ app.post("/saveData", (req, res) => {
     } else {
       // After saving data, run the Python script
       const pythonScriptPath = "./code_compile.py";
-      const command = `python3 ${pythonScriptPath}`;
+      // const command = `python3 ${pythonScriptPath}`;
+      const command = `python ${pythonScriptPath}`;
 
       exec(command, (error, stdout, stderr) => {
         if (error) {
